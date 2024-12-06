@@ -1,52 +1,30 @@
 import axiosInstance from "../axios/axiosInstance";
 import { AxiosResponse } from "axios";
 
-// Define the interface for Task data
-export interface Task {
-  id: number;
-  name: string;
-  status: "Pending" | "Completed";
-}
-
-// Define the interface for Task Response
-export interface TaskResponse {
-  task: Task;
-}
-
-// Define the interface for Task List Response
-export interface TaskListResponse {
-  tasks: Task[];
-}
-
-// Function to add a new task
+// Function to add a new task with title and description
 export const addTaskApi = (
-  name: string
+  title: string,
+  description: string
 ): Promise<AxiosResponse<{ data: any }>> =>
   axiosInstance.post<{ data: any }>("/v1/task/create-task", {
-    name,
+    title,
+    description,
   });
 
-// Function to edit an existing task
+// Function to edit an existing task, including title and description
 export const editTaskApi = (
-  taskId: string,
-  name: string
+  taskId: number,
+  title: string,
+  description: string
 ): Promise<AxiosResponse<{ data: any }>> =>
   axiosInstance.put<{ data: any }>(`/v1/task/update-task/${taskId}`, {
-    name,
-  });
-
-// Function to update the status of a task
-export const updateTaskStatusApi = (
-  taskId: string,
-  newStatus: string
-): Promise<AxiosResponse<{ data: any }>> =>
-  axiosInstance.put<{ data: any }>(`/v1/task/update-status-task/${taskId}`, {
-    newStatus,
+    title,
+    description,
   });
 
 // Function to delete a task
 export const deleteTaskApi = (
-  taskId: string
+  taskId: number
 ): Promise<AxiosResponse<{ data: { success: boolean } }>> =>
   axiosInstance.delete<{ data: { success: boolean } }>(
     `/v1/task/delete-task/${taskId}`

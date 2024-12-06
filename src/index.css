@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-size: 21px;
+    font-family: Arial, Helvetica, sans-serif;
+    /* background-color: #ddd; */
+    display: flex;
+    justify-content: center;
+  }
+  
+  .App {
+    margin-top: 2em;
+    text-align: center;
+  }
+  
+  .underline {
+    width: 2rem;
+    height: 3px;
+    border-radius: 10%;
+    margin: 0 auto;
+    margin-top: 0.5em;
+    background-color: orange;
+  }
+  
+  ul {
+    list-style-type: none;
+    margin-top: 2em;
+  }
+  
+  ul > li {
+    border: 1px solid orange;
+    padding: 1em;
+    margin: 0.5em;
+  }

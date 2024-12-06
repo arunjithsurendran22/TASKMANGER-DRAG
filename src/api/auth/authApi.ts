@@ -1,41 +1,27 @@
 import axiosInstance from "../axios/axiosInstance";
-import { AxiosResponse } from 'axios';
+import { AxiosResponse } from "axios";
 
 export interface LoginRequest {
-  countryCode: string;
-  mobileNumber: string;
-  name?: string;
   email?: string;
-}
-
-export interface Tokens {
-  token: string;
-  expires: string;
-}
-
-export interface LoginResponse {
-  user: {
-    _id: string;
-    name: string;
-    email: string;
-    countryCode: string;
-    mobileNumber: string;
-  };
-  tokens: {
-    access: Tokens;
-    refresh: Tokens;
-  };
+  password?: string;
 }
 
 export const loginApi = (
-  countryCode: string,
-  mobileNumber: string,
-  name?: string,
-  email?: string
-): Promise<AxiosResponse<{ data: LoginResponse }>> => 
-  axiosInstance.post<{ data: LoginResponse }>("/v1/auth/user-login", {
-    countryCode,
-    mobileNumber,
-    name,
+  email?: string,
+  password?: string
+): Promise<AxiosResponse<{ data: any }>> =>
+  axiosInstance.post<{ data: any }>("/v1/auth/login", {
     email,
+    password,
+  });
+
+export const registerApi = (
+  email?: string,
+  name?: string,
+  password?: string
+): Promise<AxiosResponse<{ data: any }>> =>
+  axiosInstance.post<{ data: any }>("/v1/auth/register", {
+    email,
+    name,
+    password,
   });

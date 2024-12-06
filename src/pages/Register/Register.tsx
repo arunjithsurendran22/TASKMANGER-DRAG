@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "../../routes/routePaths";
-import { login } from "../../services/authService";
+
 import {
   Box,
   Button,
@@ -12,29 +12,31 @@ import {
   CardContent,
 } from "@mui/material";
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
+import { register } from "../../services/authService";
+
+const Register: React.FC = () => {
+  const [name, setName] = useState<string>(""); // State for name
+  const [email, setEmail] = useState<string>(""); 
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
 
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await login(email, password);
-
+      const response = await register(name, email, password); // Include name in register call
       if (response && response.data) {
         localStorage.setItem("accessToken", response.data.token);
         navigate(ROUTE_PATHS.DASHBOARD);
       }
     } catch (error: any) {
-      console.error("Error during authentication:", error);
-      alert("Authentication failed.");
+      console.error("Error during registration:", error);
+      alert("Registration failed.");
     }
   };
 
-  const navigateToRegister = () => {
-    navigate(ROUTE_PATHS.REGISTER);
+  const handleNavigateToLogin = () => {
+    navigate(ROUTE_PATHS.LOGIN); // Navigate to login
   };
 
   return (
@@ -64,9 +66,21 @@ const Login: React.FC = () => {
             gutterBottom
             sx={{ fontWeight: "bold", color: "#1976d2" }}
           >
-            Welcome Back
+            Create an Account
           </Typography>
-          <form onSubmit={handleAuth}>
+          <form onSubmit={handleRegister}>
+            <Box mb={3}>
+              <TextField
+                fullWidth
+                label="Name"
+                type="text"
+                value={name} // Name input
+                onChange={(e) => setName(e.target.value)}
+                variant="outlined"
+                required
+                sx={{ backgroundColor: "#f1f3f5", borderRadius: 1 }}
+              />
+            </Box>
             <Box mb={3}>
               <TextField
                 fullWidth
@@ -109,32 +123,21 @@ const Login: React.FC = () => {
                 },
               }}
             >
-              Login
-            </Button>
-          </form>
-
-          <Box
-            mt={2}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Typography sx={{ color: "text.secondary" }}>
-              Don't have an account?
-            </Typography>
-            <Button
-              variant="text"
-              color="secondary"
-              onClick={navigateToRegister}
-              sx={{
-                fontSize: "0.9rem",
-                marginLeft: 1,
-                textTransform: "none",
-                "&:hover": { textDecoration: "underline" },
-              }}
-            >
               Register
             </Button>
+          </form>
+          {/* Add "Already have an account?" section */}
+          <Box mt={3} textAlign="center">
+            <Typography variant="body2">
+              Already have an account?{" "}
+              <Button
+                variant="text"
+                onClick={handleNavigateToLogin}
+                sx={{ color: "#1976d2", textTransform: "none" }}
+              >
+                Login 
+              </Button>
+            </Typography>
           </Box>
         </CardContent>
       </Card>
@@ -142,4 +145,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

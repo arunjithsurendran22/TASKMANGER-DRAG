@@ -3,14 +3,16 @@ import {
   addTaskApi,
   deleteTaskApi,
   editTaskApi,
-  getTasksApi,
-  updateTaskStatusApi,
+  getTasksApi
 } from "../api/task/taskApi";
 
 // Add a new task
-export const addTask = async (name: string): Promise<any> => {
+export const addTask = async (
+  title: string,
+  description: string
+): Promise<any> => {
   try {
-    const response = await addTaskApi(name);
+    const response = await addTaskApi(title, description);
     return response.data; // Return the full response
   } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;
@@ -19,31 +21,21 @@ export const addTask = async (name: string): Promise<any> => {
 };
 
 // Edit a task by ID
-export const updateTask = async (id: string, name: string): Promise<any> => { 
+export const updateTask = async (
+  taskId: number, 
+  title: string, 
+  description: string, 
+  rank?: number
+) => {
   try {
-    const response = await editTaskApi(id, name);
-    return response.data; // Return the full response
+    const response = await axios.put(`${API_URL}/task/update-task/${taskId}`, {
+      title,
+      description,
+      rank
+    });
+    return response.data;
   } catch (error) {
-    const axiosError = error as AxiosError<{ message: string }>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to edit task"
-    );
-  }
-};
-
-// Update task status by ID
-export const updateTaskStatus = async (
-  id: string,
-  newStatus: string // Updated to match backend values
-): Promise<any> => {
-  try {
-    const response = await updateTaskStatusApi(id, newStatus);
-    return response.data; 
-  } catch (error) {
-    const axiosError = error as AxiosError<{ message: string }>;
-    throw new Error(
-      axiosError.response?.data?.message || "Failed to update task status"
-    );
+    throw error;
   }
 };
 
@@ -59,7 +51,7 @@ export const getTasks = async (): Promise<any> => {
 };
 
 // Delete a task by ID
-export const deleteTask = async (id: string): Promise<any> => {
+export const deleteTask = async (id: number): Promise<any> => {
   try {
     const response = await deleteTaskApi(id);
     return response.data; // Return the full response

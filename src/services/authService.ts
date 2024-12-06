@@ -1,25 +1,26 @@
-import { loginApi, LoginResponse } from "../api/auth/authApi";
-import { AxiosError } from 'axios';
-
+import { loginApi, registerApi } from "../api/auth/authApi";
 
 export const login = async (
-  countryCode: string,
-  mobileNumber: string,
-  name?: string,
-  email?: string
-): Promise<LoginResponse | null> => {
+  email: string,
+  password: string
+): Promise<any | null> => {
   try {
-    const response = await loginApi(countryCode, mobileNumber, name, email);
-    return response.data.data;
+    const response = await loginApi(email, password);
+    return response.data;
   } catch (error) {
-    const axiosError = error as AxiosError<{ message: string }>;
+    throw new Error("Login failed");
+  }
+};
 
-    // Check for specific error message indicating missing required fields
-    if (axiosError.response?.status === 500 &&
-        axiosError.response?.data?.message.includes('validation failed')) {
-      return null; // Return null to indicate missing required fields
-    }
-
-    throw new Error(axiosError.response?.data?.message || "Login failed");
+export const register = async (
+  email: string,
+  name: string, // Adding name for registration
+  password: string
+): Promise<any | null> => {
+  try {
+    const response = await registerApi(email, name, password);
+    return response.data;
+  } catch (error) {
+    throw new Error("Registration failed");
   }
 };

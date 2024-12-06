@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../pages/Login/Login';
+import Register from '../pages/Register/Register'; 
 import Dashboard from '../pages/Dashboard/Dashboard';
 import { ROUTE_PATHS } from './routePaths';
 import PrivateRoute from './PrivateRoute';
@@ -12,6 +13,7 @@ const AppRouter: React.FC = () => {
     <Router>
       <Routes>
         <Route path={ROUTE_PATHS.LOGIN} element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path={ROUTE_PATHS.REGISTER} element={<PublicRoute><Register /></PublicRoute>} /> {/* Register route */}
         <Route path={ROUTE_PATHS.DASHBOARD} element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path={ROUTE_PATHS.NOT_FOUND} element={<NotFound />} />
         <Route path="*" element={<Navigate to={ROUTE_PATHS.NOT_FOUND} />} />
