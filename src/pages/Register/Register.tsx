@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "../../routes/routePaths";
-
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { registerAsync } from "../../store/AuthSlice";
+import toast from "react-hot-toast";
 import {
   Box,
   Button,
@@ -11,32 +13,36 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-
-import { register } from "../../services/authService";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const Register: React.FC = () => {
-  const [name, setName] = useState<string>(""); // State for name
-  const [email, setEmail] = useState<string>(""); 
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((state) => state.auth);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await register(name, email, password); // Include name in register call
-      if (response && response.data) {
-        localStorage.setItem("accessToken", response.data.token);
+      const response = await (dispatch as any)(registerAsync({ name, email, password }));
+      if (registerAsync.fulfilled.match(response)) {
+        toast.success("Registration successful!");
+        localStorage.setItem("accessToken", response.payload.token);
         navigate(ROUTE_PATHS.DASHBOARD);
+      } else {
+        toast.error(response.payload?.message || "Registration failed");
       }
     } catch (error: any) {
       console.error("Error during registration:", error);
-      alert("Registration failed.");
+      toast.error(error.message || "Registration failed");
     }
   };
 
   const handleNavigateToLogin = () => {
-    navigate(ROUTE_PATHS.LOGIN); // Navigate to login
+    navigate(ROUTE_PATHS.LOGIN);
   };
 
   return (
@@ -73,8 +79,7 @@ const Register: React.FC = () => {
               <TextField
                 fullWidth
                 label="Name"
-                type="text"
-                value={name} // Name input
+                value={name}
                 onChange={(e) => setName(e.target.value)}
                 variant="outlined"
                 required
@@ -109,6 +114,7 @@ const Register: React.FC = () => {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={loading}
               sx={{
                 paddingY: 1.5,
                 borderRadius: 3,
@@ -123,10 +129,9 @@ const Register: React.FC = () => {
                 },
               }}
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </Button>
           </form>
-          {/* Add "Already have an account?" section */}
           <Box mt={3} textAlign="center">
             <Typography variant="body2">
               Already have an account?{" "}
@@ -135,7 +140,7 @@ const Register: React.FC = () => {
                 onClick={handleNavigateToLogin}
                 sx={{ color: "#1976d2", textTransform: "none" }}
               >
-                Login 
+                Login
               </Button>
             </Typography>
           </Box>

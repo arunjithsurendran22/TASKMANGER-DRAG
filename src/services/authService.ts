@@ -14,7 +14,7 @@ export const login = async (
 
 export const register = async (
   email: string,
-  name: string, // Adding name for registration
+  name: string, 
   password: string
 ): Promise<any | null> => {
   try {

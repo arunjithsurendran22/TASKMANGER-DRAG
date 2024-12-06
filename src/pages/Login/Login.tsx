@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "../../routes/routePaths";
-import { login } from "../../services/authService";
 import {
   Box,
   Button,
@@ -11,25 +10,33 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { loginAsync } from "../../store/AuthSlice";
+import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { loading } = useAppSelector((state) => state.auth);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await login(email, password);
-
-      if (response && response.data) {
-        localStorage.setItem("accessToken", response.data.token);
+      const response = await (dispatch as any)(loginAsync({ email, password }));
+      if (loginAsync.fulfilled.match(response)) {
+        toast.success("Login successful!");
+        localStorage.setItem("accessToken", response.payload.token);
         navigate(ROUTE_PATHS.DASHBOARD);
+      } else {
+        toast.error(response.payload?.message || "Authentication failed");
       }
     } catch (error: any) {
       console.error("Error during authentication:", error);
-      alert("Authentication failed.");
+      toast.error(error.message || "Authentication failed");
     }
   };
 
@@ -108,8 +115,9 @@ const Login: React.FC = () => {
                   boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)",
                 },
               }}
+              disabled={loading} // Disable button while loading
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
 

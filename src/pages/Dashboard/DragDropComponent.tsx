@@ -1,76 +1,50 @@
-import React, { useState } from 'react'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-
-const fruits = [
-  {
-    id: '1',
-    name: 'Apple',
-  },
-  {
-    id: '2',
-    name: 'Banana',
-  },
-  {
-    id: '3',
-    name: 'Mango',
-  },
-  {
-    id: '4',
-    name: 'Orange',
-  },
-  {
-    id: '5',
-    name: 'Jackfruit',
-  },
-]
+import React, { useState } from "react";
 
 function DragDropComponent() {
-  const [fruitNames, updateFruitNames] = useState(fruits)
+  const [items, setItems] = useState<string[]>([
+    "Item 1",
+    "Item 2",
+    "Item 3",
+    "Item 4",
+    "Item 5",
+  ]);
 
-  function handleOnDragEnd(result) {
-    if (!result.destination) return
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.dataTransfer.setData("dragIndex", index.toString());
+  };
 
-    const items = Array.from(fruitNames)
-    const [reorderedItem] = items.splice(result.source.index, 1)
-    items.splice(result.destination.index, 0, reorderedItem)
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    const dragIndex = parseInt(e.dataTransfer.getData("dragIndex"));
 
-    updateFruitNames(items)
-  }
+    if (dragIndex !== dropIndex) {
+      const updatedItems = [...items];
+      const draggedItem = updatedItems.splice(dragIndex, 1)[0];
+      updatedItems.splice(dropIndex, 0, draggedItem);
+      setItems(updatedItems);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault(); // This allows the drop event to happen
+  };
 
   return (
-    <div className='App'>
-      <h3>Drag & Drop in React</h3>
-      <div className='underline'></div>
-      <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId='characters'>
-          {(provided) => (
-            <ul
-              className='fruis'
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {fruitNames.map(({ id, name, thumb }, index) => {
-                return (
-                  <Draggable key={id} draggableId={id} index={index}>
-                    {(provided) => (
-                      <li
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <p>{name}</p>
-                      </li>
-                    )}
-                  </Draggable>
-                )
-              })}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+    <div className="w-64 p-4 bg-gray-100 rounded">
+      <h3 className="font-bold mb-4">Drag and Drop List</h3>
+      {items.map((item, index) => (
+        <div
+          key={index}
+          className="p-2 mb-2 bg-white rounded shadow cursor-pointer"
+          draggable
+          onDragStart={(e) => handleDragStart(e, index)}
+          onDrop={(e) => handleDrop(e, index)}
+          onDragOver={handleDragOver}
+        >
+          {item}
+        </div>
+      ))}
     </div>
-  )
+  );
 }
 
-export default DragDropComponent
+export default DragDropComponent;

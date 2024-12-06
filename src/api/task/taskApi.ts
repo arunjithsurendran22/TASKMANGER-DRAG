@@ -33,3 +33,9 @@ export const deleteTaskApi = (
 // Function to get all tasks
 export const getTasksApi = (): Promise<AxiosResponse<{ data: any }>> =>
   axiosInstance.get<{ data: any }>("/v1/task/get-all-tasks");
+
+export const updateRankApi = (
+  taskId: number,
+  rank: number
+): Promise<AxiosResponse<{ data: any }>> =>
+  axiosInstance.put<{ data: any }>(`/v1/task/update-rank/${taskId}`, { rank });
